@@ -1,0 +1,18 @@
+{
+  "builds": [
+    {
+      "src": "maisSaborDigital/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
+      }
+    }
+  ],maisSaborDigital
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "maisSaborDigital/wsgi.py"
+    }
+  ]
+}
