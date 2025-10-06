@@ -1,13 +1,5 @@
-<<<<<<< HEAD
 asgiref==3.9.1
 Django==5.2.1
 mysqlclient==2.2.7
 tzdata==2023.4
 whitenoise==6.9.01
-=======
-asgiref==3.9.1
-Django==5.2.1
-mysqlclient==2.2.7
-tzdata==2023.4
-whitenoise==6.9.01
->>>>>>> 090da9607798e26530dd7e3769be4ef2de1718e1
