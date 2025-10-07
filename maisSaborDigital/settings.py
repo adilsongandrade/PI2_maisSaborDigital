@@ -133,10 +133,27 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+# ANTIGO
+# STATIC_URL = 'static/'
+# STATIC_DIRS = [os.path.join(BASE_DIR, 'core/static')]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_DIRS = [os.path.join(BASE_DIR, 'core/static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Localizações onde o Django PROCURA arquivos estáticos
+STATICFILES_DIRS = [
+    BASE_DIR / 'core' / 'static',
+]
+
+# Localização ONDE os arquivos estáticos serão COLETADOS para PRODUÇÃO
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Configuração do WhiteNoise para cache e compressão
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
