@@ -4,7 +4,6 @@
 <html lang="pt-br">
   <head>
     <title>Ficha Técnica - La Hermosa Parrilla</title>
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="utf-8">
   </head>
@@ -29,19 +28,7 @@
           </div> 
           <div class="item">
             <p>Peso da porção: {{ dados_receita.peso_da_porcao }} g</p>
-          </div>
-          
-        <div class="principal">
-          <div class="item">
-            <p>Imagem da receita:</p>           
-            <img 
-              src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
-              alt="Imagem da receita {{ dados_receita.nome_receita }}"
-              style="width: 200px; height: 200px; border-radius: 8px;">
-          </div>
-        </div>
-
-
+          </div> 
         </div>
 
         <div class="detalhes">
