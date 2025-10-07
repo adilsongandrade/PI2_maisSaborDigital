@@ -19,6 +19,5 @@
       "src": "/(.*)",
       "dest": "maisSaborDigital/wsgi.py"
     }
-  ],
-  "buildCommand": "bash build.sh"   
+  ]
 }
