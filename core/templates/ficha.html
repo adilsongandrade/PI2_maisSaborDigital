@@ -87,10 +87,6 @@
           <div class="item">
             <p>Imagem da receita:</p>           
             <img 
-              src="{% static 'img/' %}{{ dados_receita.nome_receita }}.jpg" 
-              alt="Imagem da receita {{ dados_receita.nome_receita }}" 
-              style="width: 200px; height: 200px; border-radius: 8px;">
-            <img 
               src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
               alt="Imagem da receita {{ dados_receita.nome_receita }}"
               style="width: 200px; height: 200px; border-radius: 8px;">
