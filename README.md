@@ -190,6 +190,73 @@ git push origin feature/minha-nova-funcionalidade
 
 -----
 
+## Fluxo de Atualização de Arquivos Estáticos (Django + Vercel) — Linux / Mac
+
+Sempre que fizer alterações em imagens, CSS ou JS, siga este fluxo para garantir que os arquivos estáticos sejam corretamente atualizados no deploy.
+
+---
+
+### 1️⃣ Limpar e reconstruir os arquivos estáticos
+
+```bash
+python manage.py collectstatic --no-input --clear
+````
+
+> Esse comando apaga a pasta `staticfiles/` e copia novamente todos os arquivos das pastas `static/` dos seus apps.
+
+---
+
+### 2️⃣ Verificar se os arquivos foram atualizados
+
+Opcional, mas útil:
+
+```bash
+ls staticfiles/img
+```
+
+---
+
+### 3️⃣ Adicionar mudanças ao Git
+
+```bash
+git add staticfiles
+git add .
+```
+
+> O primeiro comando garante que os arquivos gerados pelo Django (`staticfiles/`) sejam incluídos.
+> O segundo adiciona eventuais mudanças no código-fonte.
+
+---
+
+### 4️⃣ Registrar o commit
+
+```bash
+git commit -m "Atualiza arquivos estáticos e recompila staticfiles"
+```
+
+---
+
+### 5️⃣ Enviar para o repositório conectado à Vercel
+
+```bash
+git push origin main
+```
+
+> Se a Vercel estiver monitorando outra branch, substitua `main` pelo nome da branch correta.
+
+---
+
+### ✅ Resumo rápido (para copiar e colar)
+
+```bash
+python manage.py collectstatic --no-input --clear
+git add staticfiles
+git add .
+git commit -m "Atualiza arquivos estáticos"
+git push origin main
+```
+---
+
 ### 🌐 7. Deploy Automatizado (Vercel)
 
 O *deployment* em produção é **automatizado**:
