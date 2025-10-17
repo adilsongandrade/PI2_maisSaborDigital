@@ -15,20 +15,32 @@
       </div>
 
       <!-- DADOS PRINCIPAIS E CUSTOS -->
-      <div class="linha">
-        <div class="principal">
-          <div class="item">
-            <p>Item: {{ dados_receita.nome_receita }}</p>
-          </div>
-          <div class="item">
-            <p>Classificação: {{ dados_receita.nome_categoria }}</p>
-          </div>
-          <div class="item">
-            <p>Número de porções: {{ dados_receita.numero_porcoes }}</p>
-          </div> 
-          <div class="item">
-            <p>Peso da porção: {{ dados_receita.peso_da_porcao }} g</p>
-          </div> 
+        <div style="width: 100%;">
+          <div class="principal main">
+              <div style="width: 100%;">
+                  <div class="item">
+                      <p>Item: {{ dados_receita.nome_receita }}</p>
+                  </div>
+                  <div class="item">
+                      <p>Classificação: {{ dados_receita.nome_categoria }}</p>
+                  </div>
+                  <div class="item">
+                      <p>Número de porções: {{ dados_receita.numero_porcoes }}</p>
+                  </div> 
+                  <div class="item">
+                      <p>Peso da porção: Peso da porção: {{ dados_receita.peso_da_porcao }} g</p>
+                  </div> 
+              </div>
+              <div class="principal">
+                  <div class="item">
+                      <p>Imagem da receita:</p>           
+                      <img 
+                      src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
+                      alt="Imagem da receita {{ dados_receita.nome_receita }}"
+                      style="width: 150px; height: 150px; border-radius: 8px;">
+                  </div>
+              </div>
+            </div>  
         </div>
 
         <div class="detalhes">
@@ -82,15 +94,6 @@
 
       <!-- IMAGEM DA RECEITA E MODO DE PREPARO -->
       <div class="linha">
-        <div class="principal">
-          <div class="item">
-            <p>Imagem da receita:</p>           
-            <img 
-              src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
-              alt="Imagem da receita {{ dados_receita.nome_receita }}"
-              style="width: 200px; height: 200px; border-radius: 8px;">
-          </div>
-        </div>
         <div class="detalhes">
           <div class="item">
             <p>Modo de preparo:</p>
