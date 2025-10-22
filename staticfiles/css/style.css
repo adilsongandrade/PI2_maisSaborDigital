@@ -46,10 +46,8 @@ h1.titulo-fixo {
 
 .container > div {
     background-color: #fefefe; 
-    margin-bottom: 15px; 
     padding: 15px; 
     border-radius: 5px;
-    border: 1px solid #eee; 
     box-sizing: border-box; 
 }
 
@@ -61,13 +59,20 @@ h1.titulo-fixo {
     border-radius: 0;
 }
 
+.main{
+    display: flex;
+    flex-flow: row;
+    width: 100% !important;
+    gap: 50%;
+}
+
 .linha {
     width: 100%;
     display: flex;
     flex-flow: row wrap; 
     align-items: stretch;
-    margin-bottom: 10px; 
     box-sizing: border-box; 
+    padding: 0 !important;
 }
 
 .item {
