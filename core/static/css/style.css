@@ -179,6 +179,66 @@ h1.titulo-fixo {
 }
 
 
+/* === TABELA DE INGREDIENTES === */
+.tabela-ingredientes {
+  width: 100%;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 0.9em;
+}
+
+/* Define o grid das colunas */
+.tabela-ingredientes .linha {
+  display: grid;
+  grid-template-columns: 25% 7% 8% 10% 8% 13% 13% 16%;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Cabeçalho */
+.tabela-ingredientes .linha.cabecalho {
+  background-color: #e8e8e8;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Células */
+.tabela-ingredientes .linha > div {
+  padding: 6px 8px;
+  border-right: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Última coluna sem borda lateral */
+.tabela-ingredientes .linha > div:last-child {
+  border-right: none;
+}
+
+/* Linhas alternadas */
+.tabela-ingredientes .linha:not(.cabecalho):nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Coluna de ingredientes: alinhamento à esquerda e largura maior */
+.tabela-ingredientes .linha > div:first-child {
+  justify-content: flex-start;
+  padding-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Compactar altura das linhas */
+.tabela-ingredientes .linha {
+  line-height: 1.3em;
+}
+
+
+
 .formularioLogin {
     background-color: #fff; 
     padding: 20px;
