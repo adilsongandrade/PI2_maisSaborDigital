@@ -312,10 +312,10 @@
     <div class="card-section">
         <div class="step-title">2º Passo: Valor Médio de Vendas Mensais (Para Cálculo de % Fixo)</div>
         <table>
-            <tr class="sub-header">
+        <tr class="sub-header">
                 <td colspan="3">Qual foi o seu valor médio de vendas nos últimos meses? (R$)</td>
                 <td class="value-col">
-                                        <input type="text" id="valorMedioVendas" value="6.750,00" onblur="formatAndCalculate(this, 'calcularGastoFixoPercentual')">
+                                                                                <input type="text" id="valorMedioVendas" value="6.750,00" onblur="formatAndCalculate(this, 'atualizarTributosECalculos')">
                 </td>
             </tr>
         </table>
@@ -418,11 +418,23 @@
     <div class="card-section">
         <div class="step-title">4º Passo: Gastos Variáveis (% Sobre a Venda)</div>
         <table>
-            <tr class="input-row">
-                <td rowspan="3" style="text-align: center; width: 10%;">Tributos</td>
-                <td style="width: 50%;">Simples Nacional (Alíquota Efetiva em %) [Será Obtido via API a partir do faturamento]</td>
-                <td style="width: 15%;"></td>
-                <td class="value-col" style="width: 25%;">
+<tr class="input-row">
+        <td colspan="2">Anexo da Atividade Empresarial</td>
+        <td class="value-col" colspan="2">
+            <select id="anexoAtividade" onchange="calcularGastoVariavel()">
+                <option value="Anexo I">Anexo I (Comércio)</option>
+                <option value="Anexo II">Anexo II (Indústria)</option>
+                <option value="Anexo III" selected>Anexo III (Serviços)</option>
+                <option value="Anexo IV">Anexo IV (Serviços)</option>
+                <option value="Anexo V">Anexo V (Serviços)</option>
+            </select>
+        </td>
+    </tr>
+    <tr class="input-row">
+        <td rowspan="3" style="text-align: center; width: 10%;">Tributos</td>
+        <td style="width: 50%;">Simples Nacional (Alíquota Efetiva em %)</td>
+        <td style="width: 15%;"></td>
+        <td class="value-col" style="width: 25%;">
                     <input type="text" id="percentualTributos" value="4,50" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
                 </td>
             </tr>
@@ -936,33 +948,142 @@
         });
     }
 
-// Inicialização (simula um 'onblur' em todos os campos)
-    window.onload = () => {
-        // Inicializa o campo de Salários com o handler específico para aplicar a regra (b/b.1)
-        const salariosInput = document.getElementById('salarios');
-        handleSalariosInput(salariosInput); // Isso já chamará calcularGastoFixo()
-        
-        // Chama os outros cálculos
-        // Nota: O cálculo é feito aqui para garantir que totalCustoDireto global esteja correto
-        calcularCustoDireto();
-        calcularGastoVariavel(); // Chama calcularPrecoVenda()
-        
-        // Força a formatação dos campos de texto (preenchidos inicialmente)
-        const inputs = document.querySelectorAll('input[type="text"]');
-        inputs.forEach(input => {
-            // AJUSTE CRÍTICO: Exclui 'encargos' e 'custoMateriais'.
-            // CustoMateriais é excluído porque já está pré-formatado pelo Django e seria quebrado pelo parseCurrency.
-            if (input.value && input.id !== 'encargos' && input.id !== 'custoMateriais') { 
-                // Usa o valor de entrada para forçar a formatação
-                let numericValue = parseCurrency(input.value);
-                input.value = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            }
-        });
-        
-        // Garante que DRE e Comparação estão atualizados após os novos valores iniciais
-        calcularDRE();  
-        compararPrecos();
+
+
+// URL da API
+const API_SIMPLES_NACIONAL = 'https://simples-nacional-api.vercel.app/api/calcular_aliquota_efetiva';
+
+// Função para buscar a alíquota efetiva na API do Simples Nacional
+async function buscarAliquotaEfetiva() {
+    const valorMedioVendasInput = document.getElementById('valorMedioVendas');
+    const anexoAtividadeInput = document.getElementById('anexoAtividade');
+    const percentualTributosInput = document.getElementById('percentualTributos');
+    
+    // 1. Coleta e Normaliza os Dados
+    const valorMedioVendas = parseCurrency(valorMedioVendasInput.value);
+    const anexo = anexoAtividadeInput.value;
+    
+    // Não chama a API se o valor for zero ou negativo
+    if (valorMedioVendas <= 0) {
+        percentualTributosInput.value = (0.00).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return calcularGastoVariavel();
+    }
+    
+    // 2. Monta o Payload para a API (US-Standard: ponto como decimal)
+    const payload = {
+        receitaBrutaMedia: parseFloat(valorMedioVendas.toFixed(2)),
+        anexoDaAtividadeEmpresarial: anexo
     };
+    
+    try {
+        const response = await fetch(API_SIMPLES_NACIONAL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Opcional: headers de segurança, como Authorization ou API Key, se necessário.
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro de rede ou API: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const aliquotaEfetiva = data.aliquotaEfetiva; // Ex: 5.2615 (Padrão US)
+        
+        // 3. Atualiza o Campo de Tributos com o valor em padrão BR (vírgula como decimal)
+        // Arredondar para duas casas (ou 4 para maior precisão, mas 2 para exibição costuma ser o padrão)
+        percentualTributosInput.value = aliquotaEfetiva.toFixed(2).replace('.', ','); 
+        
+    } catch (error) {
+        console.error("Erro ao buscar a alíquota efetiva:", error);
+        // Em caso de erro, define um valor padrão ou mantém o anterior
+        showCustomAlert(
+            'Erro na API Simples Nacional',
+            'Não foi possível calcular a alíquota efetiva. Usando o valor padrão de 4,50%. Verifique o console para mais detalhes.',
+            'var(--color-accent-negative)'
+        );
+        percentualTributosInput.value = (4.50).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+    } finally {
+        // 4. Continua o Fluxo de Cálculo
+        // Nota: Esta função não pode ser chamada diretamente, pois a chamada API é assíncrona.
+        // O cálculo deve ser chamado **APÓS** a resposta da API (ou erro).
+        calcularGastoVariavel(); 
+    }
+}
+
+
+
+
+// Nova função para ser chamada após a alteração no Valor Médio de Vendas ou Anexo
+function atualizarTributosECalculos() {
+    // 1. Calcula o Percentual Fixo (Que depende do Valor Médio de Vendas)
+    // Manter a lógica original do calcularGastoFixoPercentual, mas sem chamar calcularGastoVariavel()
+    calcularGastoFixoPercentual(false); 
+    
+    // 2. Chama a API para buscar a alíquota e depois continua o cálculo
+    buscarAliquotaEfetiva();
+    
+    // O restante do fluxo (calcularGastoVariavel -> calcularPrecoVenda -> calcularDRE)
+    // será chamado dentro do bloco `finally` da função `buscarAliquotaEfetiva` para garantir a sincronia.
+}
+
+// AJUSTE: Modificar calcularGastoFixoPercentual para aceitar um parâmetro opcional
+// para não chamar calcularGastoVariavel se o fluxo for assíncrono.
+function calcularGastoFixoPercentual(chamarGastoVariavel = true) {
+    const valorMedioVendas = parseCurrency(document.getElementById('valorMedioVendas').value);
+    
+    if (valorMedioVendas > 0) {
+        percentualGastosFixos = totalGastosFixosValor / valorMedioVendas;
+    } else {
+        percentualGastosFixos = 0;
+    }
+
+    document.getElementById('percentualGastosFixos').textContent = formatPercent(percentualGastosFixos);
+
+    validarComprometimentoSimulacao();
+    
+    // Chamada condicional
+    if (chamarGastoVariavel) {
+        calcularGastoVariavel();
+    }
+}
+
+
+
+
+
+// Inicialização (simula um 'onblur' em todos os campos)
+window.onload = () => {
+    // Inicializa o campo de Salários com o handler específico para aplicar a regra (b/b.1)
+    const salariosInput = document.getElementById('salarios');
+    handleSalariosInput(salariosInput); // Isso já chamará calcularGastoFixo()
+    
+    // O calcularGastoFixo() chama calcularGastoFixoPercentual(), que agora é
+    // o ponto de entrada para o cálculo de alíquota e o restante do fluxo.
+    calcularCustoDireto();
+    
+    // A chamada à API precisa ser feita no carregamento inicial
+    atualizarTributosECalculos();
+    
+    // Força a formatação dos campos de texto (preenchidos inicialmente)
+    const inputs = document.querySelectorAll('input[type="text"]');
+    inputs.forEach(input => {
+        if (input.value && input.id !== 'encargos' && input.id !== 'custoMateriais') { 
+            let numericValue = parseCurrency(input.value);
+            input.value = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    });
+    
+    // O calcularDRE e compararPrecos será chamado no final da busca da alíquota.
+    // Garantir que, se o valor inicial for 0 (e a API não for chamada), o cálculo final ocorra.
+    if (parseCurrency(document.getElementById('valorMedioVendas').value) <= 0) {
+        calcularDRE();
+        compararPrecos();
+    }
+};
 
 </script>
 </body>
