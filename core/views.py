@@ -19,6 +19,21 @@ def login_view(request):
 def home_view(request):
     return render(request, 'home.html')
 
+# Função utilitária para retornar todos os resultados como lista de dicionários
+def dictfetchall(cursor):
+    "Retorna todos os resultados como lista de dicionários"
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+# Função utilitária para retornar um único resultado como dicionário
+def dictfetchone(cursor):
+    "Retorna um único resultado como dicionário"
+    row = cursor.fetchone()
+    if row is None:
+        return None
+    columns = [col[0] for col in cursor.description]
+    return dict(zip(columns, row))
+
 # Consulta ao banco de Dados para exibir as receitas cadastradas
 def ficha_view(request):
     if request.method == 'POST':
@@ -92,15 +107,36 @@ def ficha_view(request):
 
     return redirect('home')  # segurança
 
-def dictfetchall(cursor):
-    "Retorna todos os resultados como lista de dicionários"
-    columns = [col[0] for col in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+# NOVO: Página de Simulação de Preço
+def simular_preco_view(request):
+    # O HTML da simulação será carregado via GET ou receberá dados via POST
+    nome_receita = request.POST.get('nome_receita', 'Produto ou Serviço Não Identificado')
+    
+    # Recebe o custo como string no formato '48.45' (ponto decimal)
+    custo_direto_total_str = request.POST.get('custo_direto_total', '0.00') 
+    
+    # NOVO AJUSTE: Converte a string para float
+    try:
+        # Tenta converter para float, assumindo o formato americano (ponto)
+        custo_direto_float = float(custo_direto_total_str)
+    except ValueError:
+        # Se falhar (por exemplo, se vier '48,45' com vírgula), tenta substituir a vírgula
+        custo_direto_float = float(custo_direto_total_str.replace(',', '.'))
+    except:
+        custo_direto_float = 0.00 # Valor de segurança
 
-def dictfetchone(cursor):
-    "Retorna um único resultado como dicionário"
-    row = cursor.fetchone()
-    if row is None:
-        return None
-    columns = [col[0] for col in cursor.description]
-    return dict(zip(columns, row))
+    # Passa o valor do custo como float (não formatado) para o template
+    contexto = {
+        'nome_receita': nome_receita,
+        'custo_direto_float': custo_direto_float, # Novo nome de variável para o template
+    }
+
+    return render(request, 'simulapreco.html', contexto)
+
+# Funções auxiliares (dictfetchall e dictfetchone) movidas para o topo para melhor organização (opcional)
+# Mas, mantidas no final do seu código original por serem chamadas de forma procedural
+
+# def dictfetchall(cursor):
+#     # ... código
+# def dictfetchone(cursor):
+#     # ... código

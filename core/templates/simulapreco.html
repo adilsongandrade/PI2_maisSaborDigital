@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação de Preço de Venda (Custo) - Dashboard Ajustado</title>
+     <style>
+        /* Variáveis de Cores (Padrão Dashboard / Contemporâneo) */
+        :root {
+            --color-primary-dark: #1e3a8a;     /* Azul Escuro Corporativo (Header) */
+            --color-primary-medium: #3b82f6;   /* Azul Médio (Título dos Passos) */
+            --color-primary-light: #eff6ff;    /* Azul Muito Claro (BG de Linhas) */
+            --color-accent-success: #10b981;   /* Verde para Destaque de Preço/Lucro */
+            --color-accent-warning: #f59e0b;   /* Amarelo/Laranja para Aviso */
+            --color-accent-negative: #ef4444;  /* Vermelho para Subtração/Perda */
+            --color-bg-input: #ffffff;         /* Fundo de Inputs */
+            --color-bg-default: #f9fafb;       /* Fundo do Body */
+            --color-text-dark: #1f2937;
+            --color-text-light: #4b5563;
+        }
+
+        /* Estilos Base e Reset */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: var(--color-bg-default);
+            color: var(--color-text-dark);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background-color: var(--color-bg-input);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Título Principal */
+        .header-title {
+            background-color: var(--color-primary-dark);
+            color: white;
+            font-size: 1.8rem;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Cards/Seções */
+        .card-section {
+            background-color: var(--color-bg-input);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-title {
+            color: var(--color-primary-medium);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--color-primary-medium);
+        }
+
+        /* Tabela/Formulário */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .input-row td, .total-row td, .sub-header td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .sub-header {
+            background-color: var(--color-primary-light);
+            color: var(--color-text-dark);
+            font-weight: 600;
+        }
+
+        .input-row {
+            background-color: var(--color-bg-input);
+        }
+        
+        /* Inputs e Selects */
+        .value-col input, .value-col select, .concorrente-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        
+        .value-col input[type="text"], .value-col input[type="number"] {
+            text-align: right;
+            -moz-appearance: textfield; /* Remove flechas no Firefox */
+        }
+        
+        /* Remove flechas no Chrome/Safari */
+        .value-col input::-webkit-outer-spin-button,
+        .value-col input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .concorrente-input {
+            text-align: left;
+        }
+
+        .value-col input:focus, .value-col select:focus, .concorrente-input:focus {
+            border-color: var(--color-primary-medium);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Linhas de Resultado */
+        .total-row {
+            background-color: var(--color-primary-light);
+            font-weight: 700;
+            color: var(--color-text-dark);
+            border-bottom: 2px solid #9ca3af !important;
+        }
+
+        .input-value-result {
+            font-weight: 700;
+            text-align: right;
+            color: var(--color-primary-dark);
+        }
+
+        /* Preço Final (Destaque Principal) */
+        .final-price {
+            background-color: var(--color-accent-success);
+            color: white;
+            font-weight: 700;
+            padding: 20px 30px;
+            margin-top: 25px;
+            border-radius: 8px;
+            text-align: right;
+            letter-spacing: 0.5px;
+        }
+        
+        .final-price span:first-child {
+            font-size: 1.1rem;
+            font-weight: 400;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .final-price span:last-child {
+            font-size: 2.5rem;
+        }
+
+        /* DRE Styles */
+        .dre-header {
+            background-color: var(--color-primary-medium);
+            color: white;
+            font-size: 1.4rem;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dre-item.subtrair {
+            background-color: #fee2e2; /* light red/pink */
+            color: var(--color-accent-negative);
+            font-weight: 600;
+        }
+
+        .dre-item.resultado {
+            background-color: #dbeafe; /* light blue */
+            color: var(--color-primary-dark);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        /* Comparação Styles */
+        .min-price-ref {
+            background-color: var(--color-accent-warning);
+            /*color: var(--color-text-dark);*/
+            color: white; /* AJUSTE CRÍTICO: Mudado para branco para melhor contraste */
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .comparacao-analise {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .comparacao-variacao-pos {
+            color: var(--color-accent-success);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .comparacao-variacao-neg {
+            color: var(--color-accent-negative);
+            font-weight: 700;
+            text-align: right;
+        }
+
+       /* NOVO CSS: Estilo para a mensagem de alerta customizada */
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--color-bg-input);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 400px;
+            text-align: center;
+            border: 3px solid; /* A cor será definida via JS */
+            transition: opacity 0.3s ease;
+        }
+
+        .custom-alert.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .alert-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--color-text-dark);
+        }
+
+        .alert-message {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: var(--color-text-light);
+            line-height: 1.4;
+        }
+
+        .alert-button {
+            background-color: var(--color-primary-medium);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .alert-button:hover {
+            background-color: var(--color-primary-dark);
+        }
+
+
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <div class="header-title">
+        <b>Simulação de Preço de Venda Baseado no Custo</b>
+    </div>
+
+        <p style="font-size: 1.1rem; font-weight: 500;">Breve Descrição do seu produto ou serviço:</p>
+    <div style="background-color: var(--color-primary-light); text-align: center; font-size: 2rem; padding: 15px 0; margin-bottom: 30px; color: var(--color-primary-dark); border: 1px solid #ccc; border-radius: 6px;">
+        {{ nome_receita|default:"Produto/Serviço" }}
+ </div>
+<div class="card-section">
+<div class="step-title">1º Passo: Custo Direto (Por Unidade)</div>
+    <table>
+        <tr class="input-row">
+            <td colspan="3" style="width: 75%;">Quanto você gastou de materiais diretos? (Valor unitário final)</td>
+            <td class="value-col" style="width: 25%;"> 
+                <input 
+                    type="text"  
+                    id="custoMateriais"  
+                    value="{{ custo_direto_float|floatformat:2 }}" 
+                    readonly  
+                    style="background-color: #e5e7eb; cursor: not-allowed;"
+                    tabindex="-1"                     >
+            </td>
+        </tr>
+            <tr class="input-row">
+                <td colspan="3">Tiveram outros custos? (Embalagens por exemplo) Quanto gastou?</td>
+                <td class="value-col">
+                    <input type="text" id="outrosCustos" value="0,00" onblur="formatAndCalculate(this, 'calcularCustoDireto')">
+                </td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="3"><b>Custo direto com materiais do produto ou serviço</b></td>
+                <td id="totalCustoDireto" class="input-value-result">R$ 18,33</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card-section">
+        <div class="step-title">2º Passo: Valor Médio de Vendas Mensais (Para Cálculo de % Fixo)</div>
+        <table>
+            <tr class="sub-header">
+                <td colspan="3">Qual foi o seu valor médio de vendas nos últimos meses? (R$)</td>
+                <td class="value-col">
+                                        <input type="text" id="valorMedioVendas" value="6.750,00" onblur="formatAndCalculate(this, 'calcularGastoFixoPercentual')">
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card-section">
+        <div class="step-title">3º Passo: Gastos Fixos Mensais (R$)</div>
+        <table>
+            <tr class="input-row">
+                <td colspan="3">Salários (funcionários contratados) - Mínimo R$ 1.518,00</td>
+                <td class="value-col">
+                                        <input type="text" id="salarios" value="0,00" onblur="handleSalariosInput(this)">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Encargos Sociais dos funcionários (73,91% do Salário)</td>
+                <td class="value-col">
+                                        <input type="text" id="encargos" value="0,00" style="background-color: #e5e7eb; cursor: not-allowed;">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Pró-labore (remuneração do "dono" ou sócios)</td>
+                <td class="value-col">
+                    <input type="text" id="proLabore" value="2.000,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="2">Considerar reserva para que o "dono" do negócio "tire férias"?</td>
+                <td class="value-col" style="width: 15%;">
+                    <select id="reservaFeriasFlag" onchange="calcularGastoFixo()">
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
+                    </select>
+                </td>
+                <td id="reservaFerias" class="input-value-result">R$ 222,20</td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="2">Contribuição previdência (para aposentadoria do "dono")?</td>
+                <td class="value-col">
+                    <select id="contribuicaoPrevFlag" onchange="calcularGastoFixo()">
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
+                    </select>
+                </td>
+                                <td id="contribuicaoPrev" class="input-value-result">R$ 400,00</td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Contas de Luz e água (gasto somente do negócio)</td>
+                <td class="value-col">
+                                        <input type="text" id="luzAgua" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Telefone</td>
+                <td class="value-col">
+                                        <input type="text" id="telefone" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Aluguel e condomínio</td>
+                <td class="value-col">
+                                        <input type="text" id="aluguel" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Contador</td>
+                <td class="value-col">
+                    <input type="text" id="contador" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Serviços de terceiros</td>
+                <td class="value-col">
+                    <input type="text" id="terceiros" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3"><i>Reserva para compra de novos equipamentos / manutenção dos existentes</i></td>
+                <td class="value-col">
+                    <input type="text" id="reservaEquip" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Outras despesas</td>
+                <td class="value-col">
+                                        <input type="text" id="outrasDespesasFixas" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                </td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="3"><b>Total de gastos fixos</b></td>
+                <td id="totalGastosFixos" class="input-value-result">R$ 4.412,20</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="3"><b>Percentual de gastos fixos</b></td>
+                <td id="percentualGastosFixos" class="input-value-result">51,91%</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card-section">
+        <div class="step-title">4º Passo: Gastos Variáveis (% Sobre a Venda)</div>
+        <table>
+            <tr class="input-row">
+                <td rowspan="3" style="text-align: center; width: 10%;">Tributos</td>
+                <td style="width: 50%;">Simples Nacional (Alíquota Efetiva em %) [Será Obtido via API a partir do faturamento]</td>
+                <td style="width: 15%;"></td>
+                <td class="value-col" style="width: 25%;">
+                    <input type="text" id="percentualTributos" value="4,50" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="2">Comissões (%)</td>
+                <td class="value-col">
+                    <input type="text" id="percentualComissoes" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="2">Fretes (%)</td>
+                <td class="value-col">
+                    <input type="text" id="percentualFretes" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                </td>
+            </tr>
+            <tr class="input-row">
+                <td colspan="3">Outros (Taxa máquina de cartão) (%)</td>
+                <td class="value-col">
+                    <input type="text" id="percentualTaxaCartao" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                </td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="3"><b>Percentual total de gastos variáveis</b></td>
+                <td id="percentualGastosVariaveisTotal" class="input-value-result">4,50%</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="3"><b>Total de gastos variáveis (R$) * Estimado por unidade</b></td>
+                <td id="totalGastosVariaveis" class="input-value-result">R$ 1,94</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card-section">
+        <div class="step-title">5º Passo: Lucro Desejado e Preço de Venda</div>
+        <table>
+            <tr class="sub-header">
+                <td colspan="3">Lucro desejado (%)</td>
+                <td class="value-col">
+                    <input type="text" id="percentualLucroDesejado" value="1,00" onblur="formatAndCalculate(this, 'calcularPrecoVenda')">
+                </td>
+            </tr>
+        </table>
+        
+        <div class="final-price">
+            <span>Preço de venda [Base Custo] (mínimo sugerido):</span>
+            <span id="precoVendaSugerido">R$ 43,04</span>
+        </div>
+    </div>
+
+    <hr style="border-color: #e5e7eb; margin: 30px 0;">
+    
+    <div class="dre-header">
+        Demonstração do Resultado (DRE) por Unidade
+    </div>
+    <div class="card-section">
+        <table>
+            <tr class="dre-item resultado">
+                <td colspan="3"><b>Receita de Vendas</b></td>
+                <td id="dreReceitaVendas" style="width: 25%; text-align: right;">R$ 43,04</td>
+            </tr>
+            <tr class="sub-header">
+                <td></td>
+                <td style="text-align: center;">Quantidade Prevista (Un.)</td>
+                <td style="text-align: center;">Preço de Venda Estimado (R$)</td>
+                <td style="text-align: center;">Total (R$)</td>
+            </tr>
+            <tr class="input-row">
+                <td></td>
+                <td style="text-align: center;">
+                    <input type="number" id="dreQuantidade" value="1" min="1" step="1" onblur="calcularDRE()" style="width: 80px; text-align: center;">
+                </td>
+                <td style="text-align: center; cursor: not-allowed;">
+                    <input type="text" id="drePrecoVenda" value="43,04"  readonly  onblur="formatAndCalculate(this, 'calcularDRE')" style="width: 80px; text-align: right;">
+                </td>
+                <td id="dreTotalVendas" class="dre-item resultado" align="right" style="background-color: var(--color-primary-light); color: var(--color-primary-dark);">R$ 43,04</td>
+            </tr>
+            <tr class="dre-item subtrair">
+                <td colspan="2"><b>( - ) Tributos</b></td>
+                <td id="drePercentualTributos" style="text-align: center;">4,50%</td>
+                <td id="dreTotalTributos" style="text-align: right;">R$ 1,94</td>
+            </tr>
+            <tr class="dre-item resultado">
+                <td colspan="3"><b>( = ) Receita Líquida</b></td>
+                <td id="dreReceitaLiquida" style="text-align: right;">R$ 41,10</td>
+            </tr>
+            <tr class="dre-item subtrair">
+                <td colspan="3"><b>( - ) Custos Diretos com materiais</b></td>
+                <td id="dreCustosDiretos" style="text-align: right;">R$ 18,33</td>
+            </tr>
+            <tr class="dre-item resultado">
+                <td colspan="3"><b>( = ) Lucro Bruto</b></td>
+                <td id="dreLucroBruto" style="text-align: right;">R$ 22,77</td>
+            </tr>
+            <tr class="dre-item subtrair">
+                <td colspan="2"><b>( - ) Despesas Variáveis com Vendas</b></td>
+                <td id="drePercentualDespVariaveis" style="text-align: center;">0,00%</td>
+                <td id="dreDespesasVariaveis" style="text-align: right;">R$ 0,00</td>
+            </tr>
+            <tr class="dre-item subtrair">
+                <td colspan="2"><b>( - ) Percentual para "amortizar/pagar" Gastos Fixos (R$)</b></td>
+                <td id="drePercentualGastosFixos" style="text-align: center;">51,91%</td>
+                <td id="dreGastosFixos" style="text-align: right;">R$ 22,34</td>
+            </tr>
+            <tr class="dre-item resultado" style="border-top: 2px solid var(--color-primary-dark);">
+                <td colspan="3"><b>( = ) Resultado Líquido Estimado</b></td>
+                <td id="dreResultadoLiquido" style="text-align: right;">R$ 0,43</td>
+            </tr>
+            <tr class="dre-item resultado">
+                <td colspan="2"></td>
+                <td style="font-size: 1rem;"><b>% Lucro final líquido</b></td>
+                <td id="drePercentualLucroFinal" style="text-align: right;">1,00%</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="dre-header" style="background-color: var(--color-primary-dark);">
+        Comparação com o Mercado/Concorrência
+    </div>
+    <div class="card-section">
+        <table>
+            <tr class="sub-header">
+                <td colspan="5" style="background-color: var(--color-primary-medium); color: white;"><b>SEU NEGÓCIO</b></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">NÃO PRATICAR PREÇO DE VENDA INFERIOR A >>>></td>
+                <td id="comparacaoSeuPreco" class="min-price-ref" style="width: 20%;">R$ 43,04</td>
+                <td colspan="2" style="font-weight: bold; color: var(--color-accent-negative); padding-left: 15px;">* Referência de preço-mínimo!</td>
+            </tr>
+
+            </tr>
+            <tr style="height: 35px;"> 
+                <td colspan="5"></td>
+            </tr>
+
+
+            <tr class="sub-header" style="margin-top: 10px;">
+                <td colspan="5" style="background-color: var(--color-primary-medium); color: white;"><b>CONCORRENTES</b></td>
+            </tr>
+            <tr class="sub-header">
+                <td style="width: 5%;"></td>
+                <td style="width: 40%;">Nome</td>
+                <td style="width: 20%; text-align: center;">Preço de Venda (R$)</td>
+                <td style="width: 20%; text-align: center;">Análise</td>
+                <td style="width: 15%; text-align: center;">Variação R$</td>
+            </tr>
+            
+            <tr class="input-row">
+                <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">A)</td>
+                <td>
+                    <input type="text" id="nomeConcorrenteA" placeholder="Nome do Concorrente A" class="concorrente-input">
+                </td>
+                <td class="value-col">
+                    <input type="text" id="concorrenteA" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                </td>
+                <td id="analiseA" class="comparacao-analise">Não competitivo =></td>
+                <td id="variacaoA" class="comparacao-variacao-neg">R$ 13,04</td>
+            </tr>
+            <tr class="input-row">
+                <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">B)</td>
+                <td>
+                    <input type="text" id="nomeConcorrenteB" placeholder="Nome do Concorrente B" class="concorrente-input">
+                </td>
+                <td class="value-col">
+                    <input type="text" id="concorrenteB" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                </td>
+                <td id="analiseB" class="comparacao-analise">Não competitivo =></td>
+                <td id="variacaoB" class="comparacao-variacao-neg">R$ 3,04</td>
+            </tr>
+            <tr class="input-row">
+                <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">C)</td>
+                <td>
+                    <input type="text" id="nomeConcorrenteC" placeholder="Nome do Concorrente C" class="concorrente-input">
+                </td>
+                <td class="value-col">
+                    <input type="text" id="concorrenteC" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                </td>
+                <td id="analiseC" class="comparacao-analise">Vantagem Competitiva =></td>
+                <td id="variacaoC" class="comparacao-variacao-pos">R$ 1,96</td>
+            </tr>
+            <tr class="input-row">
+                <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">D)</td>
+                <td>
+                    <input type="text" id="nomeConcorrenteD" placeholder="Nome do Concorrente D" class="concorrente-input">
+                </td>
+                <td class="value-col">
+                    <input type="text" id="concorrenteD" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                </td>
+                <td id="analiseD" class="comparacao-analise">Não competitivo =></td>
+                <td id="variacaoD" class="comparacao-variacao-neg">R$ 43,04</td>
+            </tr>
+            <tr class="input-row">
+                <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">E)</td>
+                <td>
+                    <input type="text" id="nomeConcorrenteE" placeholder="Nome do Concorrente E" class="concorrente-input">
+                </td>
+                <td class="value-col">
+                    <input type="text" id="concorrenteE" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                </td>
+                <td id="analiseE" class="comparacao-analise">Não competitivo =></td>
+                <td id="variacaoE" class="comparacao-variacao-neg">R$ 43,04</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<div id="customAlertBox" class="custom-alert hidden">
+    <div id="customAlertTitle" class="alert-title"></div>
+    <div id="customAlertMessage" class="alert-message"></div>
+    <button onclick="hideCustomAlert()" class="alert-button">Entendido</button>
+</div>
+
+<script>
+// --- FUNÇÕES DE FORMATAÇÃO E CÁLCULO GERAL ---    
+    
+    // Função utilitária para converter string formatada (ex: "1.234,56") em float (ex: 1234.56)
+    // CUIDADO: Esta função assume que o ponto é sempre separador de milhar.
+    const parseCurrency = (value) => {
+        if (!value) return 0;
+        // 1. Remove R$
+        // 2. Substitui o ponto (separador de milhar) por vazio
+        // 3. Substitui a vírgula (separador decimal) por ponto
+        return parseFloat(value.replace('R$', '').replace(/\./g, '').replace(',', '.')) || 0;
+    };
+    
+    // NOVO AJUSTE: Função específica para ler o valor de custo unitário injetado pelo Django.
+    // Ela assume que o valor jÁ está em formato BR (48,45) e evita remover o ponto (milhar) que 
+    // está causando a leitura incorreta quando o ponto não existe no número.
+    const parseInitialCost = (value) => {
+        if (!value) return 0;
+        // Apenas substitui a vírgula por ponto (decimal)
+        return parseFloat(value.replace('R$', '').replace(',', '.')) || 0;
+    };
+
+    // Função utilitária para formatar float (ex: 1234.56) em string monetária (ex: "R$ 1.234,56")
+    const formatCurrency = (value) => {
+        return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    // Função utilitária para formatar float (ex: 0.5190) em string percentual (ex: "51,90%")
+    const formatPercent = (value) => {
+        return `${(value * 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+    };
+
+    // Função principal de formatação e gatilho de cálculo
+    function formatAndCalculate(inputElement, callbackFunctionName) {
+        let numericValue = parseCurrency(inputElement.value);
+        
+        // Formata o input para o padrão BR: 1.234,56 (duas casas decimais)
+        inputElement.value = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // Chama a função de cálculo correspondente
+        if (window[callbackFunctionName]) {
+            window[callbackFunctionName]();
+        }
+    }
+
+    // AJUSTE (b) e (b.1): Tratamento específico para o campo Salários
+    function handleSalariosInput(inputElement) {
+        let salariosValor = parseCurrency(inputElement.value);
+        const salarioMinimo = 1518.00;
+        const taxaEncargos = 0.7391; // 73,91%
+        const encargosInput = document.getElementById('encargos');
+
+        // (b) Validação de salário mínimo
+        if (salariosValor > 0 && salariosValor < salarioMinimo) {
+            salariosValor = salarioMinimo;
+            console.warn(`[AVISO] O valor de salário (R$ ${inputElement.value}) é menor que o mínimo exigido (R$ ${salarioMinimo.toFixed(2).replace('.', ',')}). Valor ajustado automaticamente.`);
+        }
+
+        // Formata o input (Salários)
+        inputElement.value = salariosValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // (b.1) Cálculo e preenchimento de Encargos Sociais (automático)
+        let encargosValor = salariosValor * taxaEncargos;
+        encargosInput.value = encargosValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        // Chama o cálculo principal
+        calcularGastoFixo();
+    }
+
+
+    // Variáveis globais para armazenar os principais resultados
+    let totalCustoDireto = 0;
+    let totalGastosFixosValor = 0;
+    let percentualGastosFixos = 0;
+    let percentualGastosVariaveisTotal = 0;
+    let precoVendaSugerido = 0;
+
+   // --- FUNÇÕES DO NOVO ALERTA CUSTOMIZADO (Substitui o window.alert) ---
+    function showCustomAlert(title, message, color) {
+        document.getElementById('customAlertTitle').textContent = title;
+        document.getElementById('customAlertMessage').innerHTML = message;
+        document.getElementById('customAlertBox').style.borderColor = color;
+        document.getElementById('customAlertBox').classList.remove('hidden');
+    }
+
+    function hideCustomAlert() {
+        document.getElementById('customAlertBox').classList.add('hidden');
+    }
+
+    // --- NOVA FUNÇÃO DE VALIDAÇÃO REQUERIDA ---
+    function validarComprometimentoSimulacao() {
+        const valorMedioVendas = parseCurrency(document.getElementById('valorMedioVendas').value);
+        
+        // Verificação: Gastos Fixos > Vendas Médias E Vendas > 0 (para evitar alerta no setup inicial)
+        if (totalGastosFixosValor > valorMedioVendas && valorMedioVendas > 0) {
+            showCustomAlert(
+                'Alerta de Simulação Comprometida!',
+                `O **Total de Gastos Fixos** (${formatCurrency(totalGastosFixosValor)}) é **MAIOR** que o **Valor Médio de Vendas** (${formatCurrency(valorMedioVendas)}).<br><br>Essa situação indica que as suas despesas fixas superam a sua receita média, comprometendo a base da simulação. Sugerimos revisar seus gastos fixos (3º Passo) ou aumentar o valor de vendas (2º Passo).`,
+                'var(--color-accent-negative)'
+            );
+        } else {
+            hideCustomAlert();
+        }
+    }
+
+
+
+    // --- FUNÇÕES DE CÁLCULO (LÓGICA DA PLANILHA) ---
+
+// 1º Passo: CUSTO DIRETO
+    function calcularCustoDireto() {
+        // AJUSTE CRÍTICO: Usa a nova função para evitar que 48.45 seja lido como 4845
+        // O valor já vem pré-formatado pelo Django (48,45) e é lido aqui:
+        const custoMateriais = parseInitialCost(document.getElementById('custoMateriais').value);
+        const outrosCustos = parseCurrency(document.getElementById('outrosCustos').value); // Outros inputs permanecem com a função padrão
+        
+        totalCustoDireto = custoMateriais + outrosCustos;
+        document.getElementById('totalCustoDireto').textContent = formatCurrency(totalCustoDireto);
+        
+        calcularGastoFixoPercentual();
+    }
+
+    // 3º Passo: GASTOS FIXOS
+    function calcularGastoFixo() {
+        // Os campos salarios e encargos já foram tratados em handleSalariosInput
+        const salarios = parseCurrency(document.getElementById('salarios').value);
+        const encargos = parseCurrency(document.getElementById('encargos').value);
+        const proLabore = parseCurrency(document.getElementById('proLabore').value);
+        // AJUSTE (d): Campos que podem ter sido preenchidos manualmente ou estão com zero
+        const luzAgua = parseCurrency(document.getElementById('luzAgua').value);
+        const telefone = parseCurrency(document.getElementById('telefone').value);
+        const aluguel = parseCurrency(document.getElementById('aluguel').value);
+        const contador = parseCurrency(document.getElementById('contador').value);
+        const terceiros = parseCurrency(document.getElementById('terceiros').value);
+        const reservaEquip = parseCurrency(document.getElementById('reservaEquip').value);
+        const outrasDespesasFixas = parseCurrency(document.getElementById('outrasDespesasFixas').value);
+
+        const reservaFeriasFlag = document.getElementById('reservaFeriasFlag').value;
+        const contribuicaoPrevFlag = document.getElementById('contribuicaoPrevFlag').value;
+        
+        let reservaFeriasValor = 0;
+        if (reservaFeriasFlag === '1' && proLabore > 0) {
+             reservaFeriasValor = proLabore / 9; // Reproduzindo o cálculo aproximado da planilha
+        }
+        
+        // AJUSTE (c): Cálculo de Contribuição Previdência
+        let contribuicaoPrevValor = 0;
+        const aliquotaContribuicao = 0.20;
+        const contribuicaoPrevMinima = 303.60;
+
+        if (contribuicaoPrevFlag === '1' && proLabore > 0) {
+            let calculoPrev = proLabore * aliquotaContribuicao;
+            // Verifica e aplica o valor mínimo
+            contribuicaoPrevValor = Math.max(calculoPrev, contribuicaoPrevMinima);
+        }
+
+        document.getElementById('reservaFerias').textContent = formatCurrency(reservaFeriasValor);
+        document.getElementById('contribuicaoPrev').textContent = formatCurrency(contribuicaoPrevValor);
+        
+        totalGastosFixosValor = salarios + encargos + proLabore + reservaFeriasValor + contribuicaoPrevValor + luzAgua + telefone + aluguel + contador + terceiros + reservaEquip + outrasDespesasFixas;
+        
+        document.getElementById('totalGastosFixos').textContent = formatCurrency(totalGastosFixosValor);
+
+        calcularGastoFixoPercentual();
+    }
+    
+    // Calcula o percentual de gastos fixos
+    function calcularGastoFixoPercentual() {
+        // AJUSTE (a) O valor inicial de valorMedioVendas foi ajustado no HTML
+        const valorMedioVendas = parseCurrency(document.getElementById('valorMedioVendas').value);
+        
+        if (valorMedioVendas > 0) {
+            percentualGastosFixos = totalGastosFixosValor / valorMedioVendas;
+        } else {
+            percentualGastosFixos = 0;
+        }
+
+        document.getElementById('percentualGastosFixos').textContent = formatPercent(percentualGastosFixos);
+
+        // PONTO DE AJUSTE REQUERIDO: Inserir a validação aqui
+        validarComprometimentoSimulacao();
+        
+        calcularGastoVariavel();
+    }
+
+    // 4º Passo: GASTOS VARIÁVEIS
+    function calcularGastoVariavel() {
+        const pTributos = parseCurrency(document.getElementById('percentualTributos').value) / 100;
+        const pComissoes = parseCurrency(document.getElementById('percentualComissoes').value) / 100;
+        const pFretes = parseCurrency(document.getElementById('percentualFretes').value) / 100;
+        const pTaxaCartao = parseCurrency(document.getElementById('percentualTaxaCartao').value) / 100;
+
+        percentualGastosVariaveisTotal = pTributos + pComissoes + pFretes + pTaxaCartao;
+
+        document.getElementById('percentualGastosVariaveisTotal').textContent = formatPercent(percentualGastosVariaveisTotal);
+        
+        calcularPrecoVenda();
+    }
+    
+    // 5º Passo: PREÇO DE VENDA SUGERIDO
+    function calcularPrecoVenda() {
+        const pLucroDesejado = parseCurrency(document.getElementById('percentualLucroDesejado').value) / 100;
+
+        // PV = Custo Direto / (1 - %GF - %GV - %LucroDesejado)
+        let denominador = 1 - percentualGastosFixos - percentualGastosVariaveisTotal - pLucroDesejado;
+
+        if (denominador > 0) {
+            precoVendaSugerido = totalCustoDireto / denominador;
+        } else {
+            precoVendaSugerido = 0;
+        }
+
+        // CÁLCULO DE GASTOS VARIÁVEIS EM R$
+        const totalGastosVariaveisValor = precoVendaSugerido * percentualGastosVariaveisTotal;
+        document.getElementById('totalGastosVariaveis').textContent = formatCurrency(totalGastosVariaveisValor);
+
+        document.getElementById('precoVendaSugerido').textContent = formatCurrency(precoVendaSugerido);
+        document.getElementById('comparacaoSeuPreco').textContent = formatCurrency(precoVendaSugerido);
+        
+        // Atualiza campos DRE (preço e formatação)
+        document.getElementById('drePrecoVenda').value = precoVendaSugerido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        calcularDRE();
+        compararPrecos();
+    }
+
+    // SIMULAÇÃO DRE
+    function calcularDRE() {
+        const quantidade = parseInt(document.getElementById('dreQuantidade').value) || 0;
+        const precoVenda = parseCurrency(document.getElementById('drePrecoVenda').value);
+        
+        const receitaVendas = quantidade * precoVenda;
+        document.getElementById('dreReceitaVendas').textContent = formatCurrency(receitaVendas);
+        document.getElementById('dreTotalVendas').textContent = formatCurrency(receitaVendas);
+
+        const pTributos = parseCurrency(document.getElementById('percentualTributos').value) / 100;
+        const totalTributos = receitaVendas * pTributos;
+        document.getElementById('drePercentualTributos').textContent = formatPercent(pTributos);
+        document.getElementById('dreTotalTributos').textContent = formatCurrency(totalTributos);
+
+        const receitaLiquida = receitaVendas - totalTributos;
+        document.getElementById('dreReceitaLiquida').textContent = formatCurrency(receitaLiquida);
+
+        const dreCustosDiretos = totalCustoDireto * quantidade;
+        document.getElementById('dreCustosDiretos').textContent = formatCurrency(dreCustosDiretos);
+
+        const lucroBruto = receitaLiquida - dreCustosDiretos;
+        document.getElementById('dreLucroBruto').textContent = formatCurrency(lucroBruto);
+
+        const pDespesasVariaveis = (parseCurrency(document.getElementById('percentualComissoes').value) + parseCurrency(document.getElementById('percentualFretes').value) + parseCurrency(document.getElementById('percentualTaxaCartao').value)) / 100;
+        const totalDespesasVariaveis = receitaVendas * pDespesasVariaveis;
+        document.getElementById('drePercentualDespVariaveis').textContent = formatPercent(pDespesasVariaveis);
+        document.getElementById('dreDespesasVariaveis').textContent = formatCurrency(totalDespesasVariaveis);
+        
+        const totalGastosFixosDRE = receitaVendas * percentualGastosFixos;
+        document.getElementById('drePercentualGastosFixos').textContent = formatPercent(percentualGastosFixos);
+        document.getElementById('dreGastosFixos').textContent = formatCurrency(totalGastosFixosDRE);
+
+        const resultadoLiquido = lucroBruto - totalDespesasVariaveis - totalGastosFixosDRE;
+        document.getElementById('dreResultadoLiquido').textContent = formatCurrency(resultadoLiquido);
+
+        let percentualLucroFinal = 0;
+        if (receitaVendas > 0) {
+            percentualLucroFinal = resultadoLiquido / receitaVendas;
+        }
+        document.getElementById('drePercentualLucroFinal').textContent = formatPercent(percentualLucroFinal);
+    }
+    
+    // COMPARAÇÃO
+    function compararPrecos() {
+        const precoMinimo = precoVendaSugerido;
+        const concorrentes = [
+            'concorrenteA', 'concorrenteB', 'concorrenteC', 'concorrenteD', 'concorrenteE'
+        ];
+        
+        concorrentes.forEach((id, index) => {
+            const precoConcorrente = parseCurrency(document.getElementById(id).value);
+            const variacao = precoConcorrente - precoMinimo;
+            const idVariacao = `variacao${String.fromCharCode(65 + index)}`;
+            const idAnalise = `analise${String.fromCharCode(65 + index)}`;
+            
+            document.getElementById(idVariacao).textContent = formatCurrency(Math.abs(variacao));
+
+            if (precoConcorrente === 0) {
+                document.getElementById(idAnalise).textContent = 'Não informado';
+                document.getElementById(idVariacao).textContent = formatCurrency(Math.abs(variacao));
+                document.getElementById(idVariacao).className = 'comparacao-variacao-neg';
+                
+            } else if (variacao > 0) {
+                document.getElementById(idAnalise).textContent = 'Vantagem Competitiva =>';
+                document.getElementById(idVariacao).className = 'comparacao-variacao-pos';
+            } else if (variacao < 0) {
+                document.getElementById(idAnalise).textContent = 'Não competitivo =>';
+                document.getElementById(idVariacao).className = 'comparacao-variacao-neg';
+            } else {
+                document.getElementById(idAnalise).textContent = 'Preço Igual';
+                document.getElementById(idVariacao).className = 'comparacao-variacao-pos';
+            }
+        });
+    }
+
+// Inicialização (simula um 'onblur' em todos os campos)
+    window.onload = () => {
+        // Inicializa o campo de Salários com o handler específico para aplicar a regra (b/b.1)
+        const salariosInput = document.getElementById('salarios');
+        handleSalariosInput(salariosInput); // Isso já chamará calcularGastoFixo()
+        
+        // Chama os outros cálculos
+        // Nota: O cálculo é feito aqui para garantir que totalCustoDireto global esteja correto
+        calcularCustoDireto();
+        calcularGastoVariavel(); // Chama calcularPrecoVenda()
+        
+        // Força a formatação dos campos de texto (preenchidos inicialmente)
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            // AJUSTE CRÍTICO: Exclui 'encargos' e 'custoMateriais'.
+            // CustoMateriais é excluído porque já está pré-formatado pelo Django e seria quebrado pelo parseCurrency.
+            if (input.value && input.id !== 'encargos' && input.id !== 'custoMateriais') { 
+                // Usa o valor de entrada para forçar a formatação
+                let numericValue = parseCurrency(input.value);
+                input.value = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+        });
+        
+        // Garante que DRE e Comparação estão atualizados após os novos valores iniciais
+        calcularDRE();  
+        compararPrecos();
+    };
+
+</script>
+</body>
+</html>

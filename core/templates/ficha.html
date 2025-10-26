@@ -4,108 +4,104 @@
 <html lang="pt-br">
 
 <head>
-  <title>Ficha Técnica - La Hermosa Parrilla</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  <meta charset="utf-8">
+    <title>Ficha Técnica - La Hermosa Parrilla</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta charset="utf-8">
 </head>
 
 <body>
-  <div class="container">
-    <h1>Ficha Técnica - La Hermosa Parrilla</h1>
-    <div id="receitaEscolhida">
-      <h2>{{ dados_receita.nome_receita }}</h2>
-    </div>
+    <div class="container">
+        <h1>Ficha Técnica - La Hermosa Parrilla</h1>
+        <div id="receitaEscolhida">
+            <h2>{{ dados_receita.nome_receita }}</h2>
+        </div>
 
-    <!-- DADOS PRINCIPAIS E CUSTOS -->
-    <div style="width: 100%;">
-      <div class="principal main">
         <div style="width: 100%;">
-          <div class="item">
-            <p>Item: {{ dados_receita.nome_receita }}</p>
-          </div>
-          <div class="item">
-            <p>Classificação: {{ dados_receita.nome_categoria }}</p>
-          </div>
-          <div class="item">
-            <p>Número de porções: {{ dados_receita.numero_porcoes }}</p>
-          </div>
-          <div class="item">
-            <p>Peso da porção: Peso da porção: {{ dados_receita.peso_da_porcao }} g</p>
-          </div>
+            <div class="principal main">
+                <div style="width: 100%;">
+                    <div class="item">
+                        <p>Item: {{ dados_receita.nome_receita }}</p>
+                    </div>
+                    <div class="item">
+                        <p>Classificação: {{ dados_receita.nome_categoria }}</p>
+                    </div>
+                    <div class="item">
+                        <p>Número de porções: {{ dados_receita.numero_porcoes }}</p>
+                    </div>
+                    <div class="item">
+                        <p>Peso da porção: Peso da porção: {{ dados_receita.peso_da_porcao }} g</p>
+                    </div>
+                </div>
+                <div class="principal">
+                    <div class="item">
+                        <p>Imagem da receita:</p>
+                        <img src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
+                            alt="Imagem da receita {{ dados_receita.nome_receita }}"
+                            style="width: 150px; height: 150px; border-radius: 8px;">
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="principal">
-          <div class="item">
-            <p>Imagem da receita:</p>
-            <img src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
-              alt="Imagem da receita {{ dados_receita.nome_receita }}"
-              style="width: 150px; height: 150px; border-radius: 8px;">
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="detalhes">
-      <div class="item">
-        <p>Preço de custo por receita: R$ {{ custo_total|floatformat:2 }}</p>
-      </div>
-      <div class="item">
-        <p>Preço de custo por porção: R$ {{ preco_custo_por_porcao|floatformat:2 }}</p>
-      </div>
-      <div class="item">
-        <p>Preço de venda por receita:</p>
-      </div>
-      <div class="item">
-        <p>Preço de venda por porção:</p>
-      </div>
-    </div>
+        <div class="detalhes">
+            <div class="item">
+                <p>Custo direto total (ingredientes): R$ {{ custo_total|floatformat:2 }}</p>
+            </div>
+            
+            <form method="POST" action="{% url 'simular_preco' %}" style="margin-top: 10px;">
+                {% csrf_token %}
+                <input type="hidden" name="nome_receita" value="{{ dados_receita.nome_receita }}">
+                <input type="hidden" name="custo_direto_total" value="{{ custo_total|floatformat:2 }}">
+                <input class="botao" type="submit" value="Simular Preço Mínimo de Venda" 
+                       style="width: 100%; padding: 10px; font-size: 1.1rem; background-color: #1e3a8a; color: white;">
+            </form>
+            </div>
 
 
-    <!-- INGREDIENTES -->
-    <div class="tabela-ingredientes">
-      <div class="linha cabecalho">
-        <div>Ingredientes</div>
-        <div>PB</div>
-        <div>Unidade</div>
-        <div>Aprovei- tamento ou FC</div>
-        <div>PL</div>
-        <div>Custo Bruto Unitário (R$)</div>
-        <div>Custo Total Bruto (R$)</div>
-        <div>Observações</div>
-      </div>
+        <div class="tabela-ingredientes">
+            <div class="linha cabecalho">
+                <div>Ingredientes</div>
+                <div>PB</div>
+                <div>Unidade</div>
+                <div>Aprovei- tamento ou FC</div>
+                <div>PL</div>
+                <div>Custo Bruto Unitário (R$)</div>
+                <div>Custo Total Bruto (R$)</div>
+                <div>Observações</div>
+            </div>
 
-      {% for ing in ingredientes %}
-      <div class="linha">
-        <div>{{ ing.descricao_ingrediente }}</div>
-        <div>{{ ing.quantidade }}</div>
-        <div>{{ ing.abreviacao }}</div>
-        <div></div>
-        <div></div>
-        <div>R$ {{ ing.custo_unitario|floatformat:2 }}</div>
-        <div>R$ {{ ing.custo_total_item|floatformat:2 }}</div>
-        <div></div>
-      </div>
-      {% endfor %}
-    </div>
-
-
-    <!-- IMAGEM DA RECEITA E MODO DE PREPARO -->
-    <div class="detalhes">
-      <div class="linha">
-        <div class="item">
-          <p>Modo de preparo:</p>
-          <ul>
-            {% for passo in modo_preparo %}
-            <li>{{ passo.texto_passo }}</li>
+            {% for ing in ingredientes %}
+            <div class="linha">
+                <div>{{ ing.descricao_ingrediente }}</div>
+                <div>{{ ing.quantidade }}</div>
+                <div>{{ ing.abreviacao }}</div>
+                <div></div>
+                <div></div>
+                <div>R$ {{ ing.custo_unitario|floatformat:2 }}</div>
+                <div>R$ {{ ing.custo_total_item|floatformat:2 }}</div>
+                <div></div>
+            </div>
             {% endfor %}
-          </ul>
         </div>
-      </div>
+
+
+        <div class="detalhes">
+            <div class="linha">
+                <div class="item">
+                    <p>Modo de preparo:</p>
+                    <ul>
+                        {% for passo in modo_preparo %}
+                        <li>{{ passo.texto_passo }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
-
-  </div>
-
-  <input class="botaoVoltar" type="button" value="Voltar" onclick="window.history.back()">
+    <input class="botaoVoltar" type="button" value="Voltar" onclick="window.history.back()">
 </body>
 
 </html>

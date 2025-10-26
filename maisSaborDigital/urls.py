@@ -20,5 +20,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
+    # Esta linha delega todas as URLs do caminho base ('') para o arquivo core.urls.
+    path('', include('core.urls')), 
 ]
