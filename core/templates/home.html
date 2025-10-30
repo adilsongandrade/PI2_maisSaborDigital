@@ -11,18 +11,18 @@
   </head>
   <body>
     <div class="container">
-      <h1>Ficha Técnica - La Hermosa Parrilla</h1>
-      <div class="formulario">
-        <p>Selecione a receita:</p>
-        <form id="formulario" method="POST" action="{% url 'ficha' %}">
+      <h1 role="banner">Ficha Técnica - La Hermosa Parrilla</h1>
+      <div class="formulario" role="main">
+        <label for="formulario">Selecione a receita:</label>
+        <form id="formulario" role="form" method="POST" action="{% url 'ficha' %}">
         {% csrf_token %}
-          <select class="receitas" id="receitas" name="id_ficha">
-            <option value="1">Batata Rústica</option>
-            <option value="2">Creme de Milho</option>
-            <option value="3">Sanduíche Artesanal</option>
+          <select class="receitas" role="combobox" id="receitas" name="id_ficha">
+            <option value="1" role="option">Batata Rústica</option>
+            <option value="2" role="option">Creme de Milho</option>
+            <option value="3" role="option">Sanduíche Artesanal</option>
           </select>
-          <input class="botaoVoltar" type="button" value="Voltar">
-          <input class="botao" type="submit" value="Enviar">
+          <input class="botaoVoltar" role="button" type="button" value="Voltar">
+          <input class="botao" role="button" type="submit" value="Enviar">
         </form>
       </div>
     </div>
