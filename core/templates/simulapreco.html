@@ -272,23 +272,25 @@
 
 </head>
 <body>
-<div class="container">
-    <div class="header-title">
+<div class="container" role="main">
+    <div class="header-title" role="banner">
         <b>Simulação de Preço de Venda Baseado no Custo</b>
     </div>
 
-        <p style="font-size: 1.1rem; font-weight: 500;">Breve Descrição do seu produto ou serviço:</p>
-    <div style="background-color: var(--color-primary-light); text-align: center; font-size: 2rem; padding: 15px 0; margin-bottom: 30px; color: var(--color-primary-dark); border: 1px solid #ccc; border-radius: 6px;">
+        <label for="produtoNome" style="font-size: 1.1rem; font-weight: 500;">Breve Descrição do seu produto ou serviço:</label>
+    <div id="produtoNome" style="background-color: var(--color-primary-light); text-align: center; font-size: 2rem; padding: 15px 0; margin-bottom: 30px; color: var(--color-primary-dark); border: 1px solid #ccc; border-radius: 6px;">
         {{ nome_receita|default:"Produto/Serviço" }}
  </div>
-<div class="card-section">
+<div class="card-section" role="region">
 <div class="step-title">1º Passo: Custo Direto (Por Unidade)</div>
-    <table>
-        <tr class="input-row">
+    <table role="table">
+        <tr class="input-row" role="row">
             <td colspan="3" style="width: 75%;">Quanto você gastou de materiais diretos? (Valor unitário final)</td>
             <td class="value-col" style="width: 25%;"> 
                 <input 
                     type="text"  
+                    role="textbox"
+                    aria-readonly="true"
                     id="custoMateriais"  
                     value="{{ custo_direto_float|floatformat:2 }}" 
                     readonly  
@@ -296,132 +298,132 @@
                     tabindex="-1"                     >
             </td>
         </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Tiveram outros custos? (Embalagens por exemplo) Quanto gastou?</td>
                 <td class="value-col">
-                    <input type="text" id="outrosCustos" value="0,00" onblur="formatAndCalculate(this, 'calcularCustoDireto')">
+                    <input type="text" role="textbox" id="outrosCustos" value="0,00" onblur="formatAndCalculate(this, 'calcularCustoDireto')">
                 </td>
             </tr>
-            <tr class="total-row">
+            <tr class="total-row" role="row">
                 <td colspan="3"><b>Custo direto com materiais do produto ou serviço</b></td>
                 <td id="totalCustoDireto" class="input-value-result">R$ 18,33</td>
             </tr>
         </table>
     </div>
 
-    <div class="card-section">
+    <div class="card-section" role="region">
         <div class="step-title">2º Passo: Valor Médio de Vendas Mensais (Para Cálculo de % Fixo)</div>
-        <table>
+        <table role="table">
         <tr class="sub-header">
                 <td colspan="3">Qual foi o seu valor médio de vendas nos últimos meses? (R$)</td>
                 <td class="value-col">
-                                                                                <input type="text" id="valorMedioVendas" value="6.750,00" onblur="formatAndCalculate(this, 'atualizarTributosECalculos')">
+                                                                                <input type="text" role="textbox" id="valorMedioVendas" value="6.750,00" onblur="formatAndCalculate(this, 'atualizarTributosECalculos')">
                 </td>
             </tr>
         </table>
     </div>
     
-    <div class="card-section">
+    <div class="card-section" role="region">
         <div class="step-title">3º Passo: Gastos Fixos Mensais (R$)</div>
-        <table>
-            <tr class="input-row">
+        <table role="table">
+            <tr class="input-row" role="row">
                 <td colspan="3">Salários (funcionários contratados) - Mínimo R$ 1.518,00</td>
                 <td class="value-col">
-                                        <input type="text" id="salarios" value="0,00" onblur="handleSalariosInput(this)">
+                                        <input type="text" role="textbox" id="salarios" value="0,00" onblur="handleSalariosInput(this)">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Encargos Sociais dos funcionários (73,91% do Salário)</td>
                 <td class="value-col">
-                                        <input type="text" id="encargos" value="0,00" style="background-color: #e5e7eb; cursor: not-allowed;">
+                                        <input type="text" role="textbox" aria-readonly="true" id="encargos" value="0,00" style="background-color: #e5e7eb; cursor: not-allowed;">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Pró-labore (remuneração do "dono" ou sócios)</td>
                 <td class="value-col">
-                    <input type="text" id="proLabore" value="2.000,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                    <input type="text" role="textbox" id="proLabore" value="2.000,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="2">Considerar reserva para que o "dono" do negócio "tire férias"?</td>
                 <td class="value-col" style="width: 15%;">
-                    <select id="reservaFeriasFlag" onchange="calcularGastoFixo()">
+                    <select role="combobox" id="reservaFeriasFlag" onchange="calcularGastoFixo()">
                         <option value="1">Sim</option>
                         <option value="0">Não</option>
                     </select>
                 </td>
                 <td id="reservaFerias" class="input-value-result">R$ 222,20</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="2">Contribuição previdência (para aposentadoria do "dono")?</td>
                 <td class="value-col">
-                    <select id="contribuicaoPrevFlag" onchange="calcularGastoFixo()">
+                    <select role="combobox" id="contribuicaoPrevFlag" onchange="calcularGastoFixo()">
                         <option value="1">Sim</option>
                         <option value="0">Não</option>
                     </select>
                 </td>
                                 <td id="contribuicaoPrev" class="input-value-result">R$ 400,00</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Contas de Luz e água (gasto somente do negócio)</td>
                 <td class="value-col">
-                                        <input type="text" id="luzAgua" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                                        <input type="text" role="textbox" id="luzAgua" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Telefone</td>
                 <td class="value-col">
-                                        <input type="text" id="telefone" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                                        <input type="text" role="textbox" id="telefone" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Aluguel e condomínio</td>
                 <td class="value-col">
-                                        <input type="text" id="aluguel" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                                        <input type="text" role="textbox" id="aluguel" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Contador</td>
                 <td class="value-col">
-                    <input type="text" id="contador" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                    <input type="text" role="textbox" id="contador" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Serviços de terceiros</td>
                 <td class="value-col">
-                    <input type="text" id="terceiros" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                    <input type="text" role="textbox" id="terceiros" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3"><i>Reserva para compra de novos equipamentos / manutenção dos existentes</i></td>
                 <td class="value-col">
-                    <input type="text" id="reservaEquip" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                    <input type="text" role="textbox" id="reservaEquip" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Outras despesas</td>
                 <td class="value-col">
-                                        <input type="text" id="outrasDespesasFixas" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
+                                        <input type="text" role="textbox" id="outrasDespesasFixas" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoFixo')">
                 </td>
             </tr>
-            <tr class="total-row">
+            <tr class="total-row" role="row">
                 <td colspan="3"><b>Total de gastos fixos</b></td>
                 <td id="totalGastosFixos" class="input-value-result">R$ 4.412,20</td>
             </tr>
-            <tr class="total-row">
+            <tr class="total-row" role="row">
                 <td colspan="3"><b>Percentual de gastos fixos</b></td>
                 <td id="percentualGastosFixos" class="input-value-result">51,91%</td>
             </tr>
         </table>
     </div>
 
-    <div class="card-section">
+    <div class="card-section" role="region">
         <div class="step-title">4º Passo: Gastos Variáveis (% Sobre a Venda)</div>
-        <table>
-<tr class="input-row">
+        <table role="table">
+<tr class="input-row" role="row">
         <td colspan="2">Anexo da Atividade Empresarial</td>
         <td class="value-col" colspan="2">
-            <select id="anexoAtividade" onchange="calcularGastoVariavel()">
+            <select role="combobox" id="anexoAtividade" onchange="calcularGastoVariavel()">
                 <option value="Anexo I">Anexo I (Comércio)</option>
                 <option value="Anexo II">Anexo II (Indústria)</option>
                 <option value="Anexo III" selected>Anexo III (Serviços)</option>
@@ -430,50 +432,50 @@
             </select>
         </td>
     </tr>
-    <tr class="input-row">
+    <tr class="input-row" role="row">
         <td rowspan="3" style="text-align: center; width: 10%;">Tributos</td>
         <td style="width: 50%;">Simples Nacional (Alíquota Efetiva em %)</td>
         <td style="width: 15%;"></td>
         <td class="value-col" style="width: 25%;">
-                    <input type="text" id="percentualTributos" value="4,50" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                    <input type="text" role="textbox" id="percentualTributos" value="4,50" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="2">Comissões (%)</td>
                 <td class="value-col">
-                    <input type="text" id="percentualComissoes" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                    <input type="text" role="textbox" id="percentualComissoes" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="2">Fretes (%)</td>
                 <td class="value-col">
-                    <input type="text" id="percentualFretes" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                    <input type="text" role="textbox" id="percentualFretes" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
                 </td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td colspan="3">Outros (Taxa máquina de cartão) (%)</td>
                 <td class="value-col">
-                    <input type="text" id="percentualTaxaCartao" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                    <input type="text" role="textbox" id="percentualTaxaCartao" value="0,00" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
                 </td>
             </tr>
-            <tr class="total-row">
+            <tr class="total-row" role="row">
                 <td colspan="3"><b>Percentual total de gastos variáveis</b></td>
                 <td id="percentualGastosVariaveisTotal" class="input-value-result">4,50%</td>
             </tr>
-            <tr class="total-row">
+            <tr class="total-row" role="row">
                 <td colspan="3"><b>Total de gastos variáveis (R$) * Estimado por unidade</b></td>
                 <td id="totalGastosVariaveis" class="input-value-result">R$ 1,94</td>
             </tr>
         </table>
     </div>
 
-    <div class="card-section">
+    <div class="card-section" role="region">
         <div class="step-title">5º Passo: Lucro Desejado e Preço de Venda</div>
-        <table>
+        <table role="table">
             <tr class="sub-header">
                 <td colspan="3">Lucro desejado (%)</td>
                 <td class="value-col">
-                    <input type="text" id="percentualLucroDesejado" value="1,00" onblur="formatAndCalculate(this, 'calcularPrecoVenda')">
+                    <input type="text" role="textbox" id="percentualLucroDesejado" value="1,00" onblur="formatAndCalculate(this, 'calcularPrecoVenda')">
                 </td>
             </tr>
         </table>
@@ -489,8 +491,8 @@
     <div class="dre-header">
         Demonstração do Resultado (DRE) por Unidade
     </div>
-    <div class="card-section">
-        <table>
+    <div class="card-section" role="region">
+        <table role="table">
             <tr class="dre-item resultado">
                 <td colspan="3"><b>Receita de Vendas</b></td>
                 <td id="dreReceitaVendas" style="width: 25%; text-align: right;">R$ 43,04</td>
@@ -501,13 +503,13 @@
                 <td style="text-align: center;">Preço de Venda Estimado (R$)</td>
                 <td style="text-align: center;">Total (R$)</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td></td>
                 <td style="text-align: center;">
-                    <input type="number" id="dreQuantidade" value="1" min="1" step="1" onblur="calcularDRE()" style="width: 80px; text-align: center;">
+                    <input type="number" role="spinbutton" id="dreQuantidade" value="1" min="1" step="1" onblur="calcularDRE()" style="width: 80px; text-align: center;">
                 </td>
                 <td style="text-align: center; cursor: not-allowed;">
-                    <input type="text" id="drePrecoVenda" value="43,04"  readonly  onblur="formatAndCalculate(this, 'calcularDRE')" style="width: 80px; text-align: right;">
+                    <input type="text" role="textbox" id="drePrecoVenda" value="43,04"  readonly  onblur="formatAndCalculate(this, 'calcularDRE')" style="width: 80px; text-align: right;">
                 </td>
                 <td id="dreTotalVendas" class="dre-item resultado" align="right" style="background-color: var(--color-primary-light); color: var(--color-primary-dark);">R$ 43,04</td>
             </tr>
@@ -553,8 +555,8 @@
     <div class="dre-header" style="background-color: var(--color-primary-dark);">
         Comparação com o Mercado/Concorrência
     </div>
-    <div class="card-section">
-        <table>
+    <div class="card-section" role="region">
+        <table role="table">
             <tr class="sub-header">
                 <td colspan="5" style="background-color: var(--color-primary-medium); color: white;"><b>SEU NEGÓCIO</b></td>
             </tr>
@@ -581,57 +583,57 @@
                 <td style="width: 15%; text-align: center;">Variação R$</td>
             </tr>
             
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">A)</td>
                 <td>
-                    <input type="text" id="nomeConcorrenteA" placeholder="Nome do Concorrente A" class="concorrente-input">
+                    <input type="text" role="textbox" id="nomeConcorrenteA" placeholder="Nome do Concorrente A" class="concorrente-input">
                 </td>
                 <td class="value-col">
-                    <input type="text" id="concorrenteA" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                    <input type="text" role="textbox" id="concorrenteA" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
                 </td>
                 <td id="analiseA" class="comparacao-analise">Não competitivo =></td>
                 <td id="variacaoA" class="comparacao-variacao-neg">R$ 13,04</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">B)</td>
                 <td>
-                    <input type="text" id="nomeConcorrenteB" placeholder="Nome do Concorrente B" class="concorrente-input">
+                    <input type="text" role="textbox" id="nomeConcorrenteB" placeholder="Nome do Concorrente B" class="concorrente-input">
                 </td>
                 <td class="value-col">
-                    <input type="text" id="concorrenteB" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                    <input type="text" role="textbox" id="concorrenteB" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
                 </td>
                 <td id="analiseB" class="comparacao-analise">Não competitivo =></td>
                 <td id="variacaoB" class="comparacao-variacao-neg">R$ 3,04</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">C)</td>
                 <td>
-                    <input type="text" id="nomeConcorrenteC" placeholder="Nome do Concorrente C" class="concorrente-input">
+                    <input type="text" role="textbox" id="nomeConcorrenteC" placeholder="Nome do Concorrente C" class="concorrente-input">
                 </td>
                 <td class="value-col">
-                    <input type="text" id="concorrenteC" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                    <input type="text" role="textbox" id="concorrenteC" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
                 </td>
                 <td id="analiseC" class="comparacao-analise">Vantagem Competitiva =></td>
                 <td id="variacaoC" class="comparacao-variacao-pos">R$ 1,96</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">D)</td>
                 <td>
-                    <input type="text" id="nomeConcorrenteD" placeholder="Nome do Concorrente D" class="concorrente-input">
+                    <input type="text" role="textbox" id="nomeConcorrenteD" placeholder="Nome do Concorrente D" class="concorrente-input">
                 </td>
                 <td class="value-col">
-                    <input type="text" id="concorrenteD" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                    <input type="text" role="textbox" id="concorrenteD" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
                 </td>
                 <td id="analiseD" class="comparacao-analise">Não competitivo =></td>
                 <td id="variacaoD" class="comparacao-variacao-neg">R$ 43,04</td>
             </tr>
-            <tr class="input-row">
+            <tr class="input-row" role="row">
                 <td style="font-size: 1.5rem; font-weight: bold; text-align: right;">E)</td>
                 <td>
-                    <input type="text" id="nomeConcorrenteE" placeholder="Nome do Concorrente E" class="concorrente-input">
+                    <input type="text" role="textbox" id="nomeConcorrenteE" placeholder="Nome do Concorrente E" class="concorrente-input">
                 </td>
                 <td class="value-col">
-                    <input type="text" id="concorrenteE" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
+                    <input type="text" role="textbox" id="concorrenteE" value="0,00" onblur="formatAndCalculate(this, 'compararPrecos')">
                 </td>
                 <td id="analiseE" class="comparacao-analise">Não competitivo =></td>
                 <td id="variacaoE" class="comparacao-variacao-neg">R$ 43,04</td>
