@@ -21,9 +21,11 @@
             <option value="2" role="option">Creme de Milho</option>
             <option value="3" role="option">Sanduíche Artesanal</option>
           </select>
-          <input class="botaoVoltar" role="button" type="button" value="Voltar">
-          <input class="botao" role="button" type="submit" value="Enviar">
+          <input class="botao" role="button" type="submit" value="Acessar">
         </form>
+          <button type="button" class="botao" onclick="window.location.href='{% url 'login' %}'">
+              Sair
+          </button>        
       </div>
     </div>
   </body>

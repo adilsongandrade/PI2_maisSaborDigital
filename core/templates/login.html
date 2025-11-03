@@ -16,8 +16,11 @@
         <form method="post" action="{% url 'login' %}">
           {% csrf_token %}
           <label for="login">Usuário:</label>
+          <br>
           <input type="text" role="textbox" name="usuario" id="login" required>
+          <br><br>
           <label for="senha">Senha:</label>
+          <br>
           <input type="password" role="textbox" name="senha" id="senha" required><br>
           <input class="botao" role="button" type="submit" value="Enviar">
         </form>

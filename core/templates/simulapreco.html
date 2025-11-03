@@ -267,6 +267,21 @@
             background-color: var(--color-primary-dark);
         }
 
+        .botao {
+    background-color: #007bff; 
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+.botao:hover {
+    background-color: #0056b3;
+}
+
 
     </style>
 
@@ -640,6 +655,10 @@
             </tr>
         </table>
     </div>
+
+        <button type="button" class="botao" onclick="window.location.href='{% url 'ficha' %}'">
+        Voltar
+        </button>
 
 </div>
 

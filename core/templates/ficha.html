@@ -52,7 +52,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="nome_receita" value="{{ dados_receita.nome_receita }}">
                 <input type="hidden" name="custo_direto_total" value="{{ custo_total|floatformat:2 }}">
-                <input class="botao" type="submit" role="button" value="Simular Preço Mínimo de Venda" 
+                <input class="botao" type="submit" role="button" value="Clique para Simular Preço Mínimo de Venda" 
                        style="width: 100%; padding: 10px; font-size: 1.1rem; background-color: #1e3a8a; color: white;">
             </form>
             </div>
@@ -95,9 +95,10 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <input class="botaoVoltar" type="button" value="Voltar" role="button" onclick="window.history.back()">
+        <button type="button" class="botao" onclick="window.location.href='{% url 'ficha' %}'">
+        Voltar
+        </button>
+    </div>    
 </body>
 
 </html>
