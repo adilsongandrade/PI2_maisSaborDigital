@@ -11,13 +11,13 @@
 
 <body>
     <div class="container">
-        <h1>Ficha Técnica - La Hermosa Parrilla</h1>
-        <div id="receitaEscolhida">
+        <h1 role="banner">Ficha Técnica - La Hermosa Parrilla</h1>
+        <div id="receitaEscolhida" role="heading">
             <h2>{{ dados_receita.nome_receita }}</h2>
         </div>
 
         <div style="width: 100%;">
-            <div class="principal main">
+            <div class="principal main" role="main">
                 <div style="width: 100%;">
                     <div class="item">
                         <p>Item: {{ dados_receita.nome_receita }}</p>
@@ -32,10 +32,10 @@
                         <p>Peso da porção: Peso da porção: {{ dados_receita.peso_da_porcao }} g</p>
                     </div>
                 </div>
-                <div class="principal">
+                <div class="principal" role="presentation">
                     <div class="item">
                         <p>Imagem da receita:</p>
-                        <img src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
+                        <img role="img" src="{% static 'img/' %}{{ dados_receita.nome_receita|slugify_filename }}.jpg"
                             alt="Imagem da receita {{ dados_receita.nome_receita }}"
                             style="width: 150px; height: 150px; border-radius: 8px;">
                     </div>
@@ -43,23 +43,22 @@
             </div>
         </div>
 
-        <div class="detalhes">
+        <div class="detalhes" role="complementary">
             <div class="item">
                 <p>Custo direto total (ingredientes): R$ {{ custo_total|floatformat:2 }}</p>
             </div>
             
-            <form method="POST" action="{% url 'simular_preco' %}" style="margin-top: 10px;">
+            <form method="POST" role="form" action="{% url 'simular_preco' %}" style="margin-top: 10px;">
                 {% csrf_token %}
                 <input type="hidden" name="nome_receita" value="{{ dados_receita.nome_receita }}">
                 <input type="hidden" name="custo_direto_total" value="{{ custo_total|floatformat:2 }}">
-                <input class="botao" type="submit" value="Simular Preço Mínimo de Venda" 
+                <input class="botao" type="submit" role="button" value="Simular Preço Mínimo de Venda" 
                        style="width: 100%; padding: 10px; font-size: 1.1rem; background-color: #1e3a8a; color: white;">
             </form>
             </div>
 
-
-        <div class="tabela-ingredientes">
-            <div class="linha cabecalho">
+        <div class="tabela-ingredientes" role="table">
+            <div class="linha cabecalho" role="rowheader">
                 <div>Ingredientes</div>
                 <div>PB</div>
                 <div>Unidade</div>
@@ -71,7 +70,7 @@
             </div>
 
             {% for ing in ingredientes %}
-            <div class="linha">
+            <div class="linha" role="row">
                 <div>{{ ing.descricao_ingrediente }}</div>
                 <div>{{ ing.quantidade }}</div>
                 <div>{{ ing.abreviacao }}</div>
@@ -84,10 +83,9 @@
             {% endfor %}
         </div>
 
-
-        <div class="detalhes">
+        <div class="detalhes" role="complementary">
             <div class="linha">
-                <div class="item">
+                <div class="item" role="list">
                     <p>Modo de preparo:</p>
                     <ul>
                         {% for passo in modo_preparo %}
@@ -97,11 +95,9 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 
-    <input class="botaoVoltar" type="button" value="Voltar" onclick="window.history.back()">
+    <input class="botaoVoltar" type="button" value="Voltar" role="button" onclick="window.history.back()">
 </body>
 
 </html>
