@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Esta linha delega todas as URLs do caminho base ('') para o arquivo core.urls.
+    
+    # Esta linha delega as URLs principais para o app 'core'. (MANTIDO)
     path('', include('core.urls')), 
+    
+    # NOVO: Rota para a API de Proxy. (TODAS AS REQUISIÇÕES /api/precificacao/* VÃO PARA O NOVO APP)
+    path('api/precificacao/', include('precificacao.urls')),
 ]

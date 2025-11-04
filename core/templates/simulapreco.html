@@ -438,10 +438,10 @@
 <tr class="input-row" role="row">
         <td colspan="2">Anexo da Atividade Empresarial</td>
         <td class="value-col" colspan="2">
-            <select role="combobox" id="anexoAtividade" onchange="calcularGastoVariavel()">
+            <select role="combobox" id="anexoAtividade" onchange="atualizarTributosECalculos()">
                 <option value="Anexo I">Anexo I (Comércio)</option>
-                <option value="Anexo II">Anexo II (Indústria)</option>
-                <option value="Anexo III" selected>Anexo III (Serviços)</option>
+                <option value="Anexo II" selected>Anexo II (Indústria)</option>
+                <option value="Anexo III">Anexo III (Serviços)</option>
                 <option value="Anexo IV">Anexo IV (Serviços)</option>
                 <option value="Anexo V">Anexo V (Serviços)</option>
             </select>
@@ -971,66 +971,68 @@
 
 
 
-// URL da API
-const API_SIMPLES_NACIONAL = 'https://simples-nacional-api.vercel.app/api/calcular_aliquota_efetiva';
+// URL da API (nota: Externa ocorre erros de CORS)
+// const API_SIMPLES_NACIONAL = 'https://simples-nacional-api.vercel.app/api/calcular_aliquota_efetiva';
 
-// Função para buscar a alíquota efetiva na API do Simples Nacional
+// URL DO SEU PROXY DJANGO (Rota interna que fará a chamada externa)
+//const API_SIMPLES_NACIONAL_PROXY = '/api/precificacao/simples-nacional/';
+// Localização: simulapreco.html (dentro da tag <script>)
+
+// URL DO SEU PROXY DJANGO
+// NOVO VALOR: A rota de sub-nível é a própria rota do app proxy.
+// NOVO VALOR: A URL completa agora inclui a sub-rota 'aliquota/'
+const API_SIMPLES_NACIONAL_PROXY = '/api/precificacao/aliquota/';
+
+// --- FUNÇÃO DE BUSCA DA ALÍQUOTA (AGORA VIA PROXY) ---
 async function buscarAliquotaEfetiva() {
     const valorMedioVendasInput = document.getElementById('valorMedioVendas');
     const anexoAtividadeInput = document.getElementById('anexoAtividade');
     const percentualTributosInput = document.getElementById('percentualTributos');
     
-    // 1. Coleta e Normaliza os Dados
     const valorMedioVendas = parseCurrency(valorMedioVendasInput.value);
     const anexo = anexoAtividadeInput.value;
     
-    // Não chama a API se o valor for zero ou negativo
     if (valorMedioVendas <= 0) {
         percentualTributosInput.value = (0.00).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         return calcularGastoVariavel();
     }
     
-    // 2. Monta o Payload para a API (US-Standard: ponto como decimal)
+    // Payload usa o valor numérico (ponto decimal) esperado pelo Python/API externa
     const payload = {
-        receitaBrutaMedia: parseFloat(valorMedioVendas.toFixed(2)),
+        receitaBrutaMedia: parseFloat(valorMedioVendas.toFixed(2)), 
         anexoDaAtividadeEmpresarial: anexo
     };
     
     try {
-        const response = await fetch(API_SIMPLES_NACIONAL, {
+        const response = await fetch(API_SIMPLES_NACIONAL_PROXY, { // <-- CHAMA O PROXY DJANGO
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // Opcional: headers de segurança, como Authorization ou API Key, se necessário.
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-            throw new Error(`Erro de rede ou API: ${response.status} ${response.statusText}`);
-        }
+        const data = await response.json(); 
 
-        const data = await response.json();
-        const aliquotaEfetiva = data.aliquotaEfetiva; // Ex: 5.2615 (Padrão US)
+        if (!response.ok) {
+            // Se o status HTTP não for 200, assume-se que o Django retornou o erro da API externa
+            throw new Error(`Erro no Proxy: Status ${response.status}. Detalhe: ${data.detalhe || data.error}`);
+        }
         
-        // 3. Atualiza o Campo de Tributos com o valor em padrão BR (vírgula como decimal)
-        // Arredondar para duas casas (ou 4 para maior precisão, mas 2 para exibição costuma ser o padrão)
+        const aliquotaEfetiva = data.aliquotaEfetiva;
+        
+        // Atualiza o campo com o valor em padrão BR (vírgula decimal)
         percentualTributosInput.value = aliquotaEfetiva.toFixed(2).replace('.', ','); 
         
     } catch (error) {
-        console.error("Erro ao buscar a alíquota efetiva:", error);
-        // Em caso de erro, define um valor padrão ou mantém o anterior
+        console.error("Erro ao buscar a alíquota efetiva (via Proxy):", error);
         showCustomAlert(
             'Erro na API Simples Nacional',
-            'Não foi possível calcular a alíquota efetiva. Usando o valor padrão de 4,50%. Verifique o console para mais detalhes.',
+            'Não foi possível calcular a alíquota efetiva. Usando 4,50%.',
             'var(--color-accent-negative)'
         );
         percentualTributosInput.value = (4.50).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         
     } finally {
-        // 4. Continua o Fluxo de Cálculo
-        // Nota: Esta função não pode ser chamada diretamente, pois a chamada API é assíncrona.
-        // O cálculo deve ser chamado **APÓS** a resposta da API (ou erro).
+        // Continua o fluxo de cálculo após o fetch (sucesso ou falha)
         calcularGastoVariavel(); 
     }
 }
