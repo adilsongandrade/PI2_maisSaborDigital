@@ -57,7 +57,7 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
@@ -65,7 +65,7 @@
             color: var(--color-primary-medium);
             font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 2px solid var(--color-primary-medium);
         }
@@ -78,7 +78,8 @@
         }
 
         .input-row td, .total-row td, .sub-header td {
-            padding: 12px 10px;
+            /*padding: 12px 10px;*/
+            padding: 5px 5px;            
             border-bottom: 1px solid #e5e7eb;
         }
         
@@ -282,6 +283,13 @@
     background-color: #0056b3;
 }
 
+input[readonly],
+input[disabled] {
+  user-select: none;
+  pointer-events: none;
+}
+
+
 
     </style>
 
@@ -350,7 +358,7 @@
             <tr class="input-row" role="row">
                 <td colspan="3">Encargos Sociais dos funcionários (73,91% do Salário)</td>
                 <td class="value-col">
-                                        <input type="text" role="textbox" aria-readonly="true" id="encargos" value="0,00" style="background-color: #e5e7eb; cursor: not-allowed;">
+                                        <input type="text" role="textbox" aria-readonly="true" readonly id="encargos" value="0,00" style="background-color: #e5e7eb; cursor: not-allowed;">
                 </td>
             </tr>
             <tr class="input-row" role="row">
@@ -436,6 +444,7 @@
         <div class="step-title">4º Passo: Gastos Variáveis (% Sobre a Venda)</div>
         <table role="table">
 <tr class="input-row" role="row">
+        <td rowspan="2" style="text-align: center; width: 10%;">Tributos</td>    
         <td colspan="2">Anexo da Atividade Empresarial</td>
         <td class="value-col" colspan="2">
             <select role="combobox" id="anexoAtividade" onchange="atualizarTributosECalculos()">
@@ -448,11 +457,11 @@
         </td>
     </tr>
     <tr class="input-row" role="row">
-        <td rowspan="3" style="text-align: center; width: 10%;">Tributos</td>
+
         <td style="width: 50%;">Simples Nacional (Alíquota Efetiva em %)</td>
         <td style="width: 15%;"></td>
         <td class="value-col" style="width: 25%;">
-                    <input type="text" role="textbox" id="percentualTributos" value="4,50" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
+                    <input type="text" role="textbox" aria-readonly="true" readonly id="percentualTributos" value="4,50" style="background-color: #e5e7eb; cursor: not-allowed;" onblur="formatAndCalculate(this, 'calcularGastoVariavel')">
                 </td>
             </tr>
             <tr class="input-row" role="row">
