@@ -6,6 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.querySelector(".botaoVoltar");
   
     backButton.addEventListener("click", () => {
-      window.location.href = "principal.html";
+      window.location.href = "login.html";
     });
   });
