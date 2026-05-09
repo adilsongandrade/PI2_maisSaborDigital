@@ -327,6 +327,8 @@ h1.titulo-fixo {
     flex-flow: row;
     align-items: center;
     justify-content: center;
+    position: sticky;
+    top: 0;
 }
 
 .display-numero {
