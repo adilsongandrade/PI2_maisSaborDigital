@@ -329,7 +329,7 @@ h1.titulo-fixo {
     justify-content: center;
 }
 
-.font-size-selector > input {
+.display-numero {
     width: 15px;
     background-color: white;
     color: black;
