@@ -30,5 +30,18 @@ function alterarTamanhoFonte(valor) {
   input.value = parseInt(input.value || 0) + (valor > 0 ? 1 : -1);
 }
 
-botaoAumentar.onclick = () => alterarTamanhoFonte(1);
-botaoDiminuir.onclick = () => alterarTamanhoFonte(-1);
+const input = document.querySelector(".display-numero");
+
+botaoAumentar.onclick = () => {
+  const valorAtual = parseInt(input.value || 0);
+  if (valorAtual < 25) {
+    alterarTamanhoFonte(1);
+  }
+};
+
+botaoDiminuir.onclick = () => {
+  const valorAtual = parseInt(input.value || 0);
+  if (valorAtual > 1) {
+    alterarTamanhoFonte(-1);
+  }
+};
